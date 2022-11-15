@@ -45,7 +45,6 @@ workflows:
           pub-type: production
           requires:
             - orb-tools/pack
-            - command-tests
             - no-rust-executor-build-test
             - default-build-test
           context: orb-publishing
