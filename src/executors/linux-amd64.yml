@@ -1,5 +1,5 @@
 description: >
   Linux amd64 (x86_64) executor
 machine:
-  image: ubuntu-2204
+  image: ubuntu-2204:current
 resource_class: large
