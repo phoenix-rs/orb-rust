@@ -20,7 +20,6 @@ workflows:
     jobs:
       # Make sure to include "filters: *filters" in every test job you want to run as part of your deployment.
       - rust/lint-test-build:
-          name: default-build-test
           matrix:
             parameters:
               target:
@@ -46,7 +45,7 @@ workflows:
           requires:
             - orb-tools/pack
             - no-rust-executor-build-test
-            - default-build-test
+            - rust/lint-test-build
           context: orb-publishing
           filters:
             branches:
