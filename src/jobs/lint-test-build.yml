@@ -52,7 +52,7 @@ steps:
       steps:
         - restore_cache:
             keys:
-              - &cache-key cargo-<<parameters.cache_version>>-{{ arch }}-{{ checksum "Cargo.lock" }}-{{ checksum "rust-toolchain.toml" }}
+              - &cache-key cargo-<<parameters.cache_version>>-{{ arch }}-{{ checksum "Cargo.lock" }}
   - when:
       condition: <<parameters.target_setup>>
       steps:
