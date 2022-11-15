@@ -36,8 +36,6 @@ workflows:
           target_setup_rust_version: "1.65"
           store_artifact: true
           artifact_destination: testapp-custom-docker-norust
-      - command-tests:
-          filters: *filters
       - orb-tools/pack:
           filters: *filters
 
