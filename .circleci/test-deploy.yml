@@ -9,9 +9,11 @@ filters: &filters
 
 executors:
   custom-docker:
-    - image: cimg/rust:1.65
+    docker:
+      - image: cimg/rust:1.65
   custom-docker-norust:
-    - image: ubuntu:focal
+    docker:
+      - image: ubuntu:focal
 
 workflows:
   test-deploy:
