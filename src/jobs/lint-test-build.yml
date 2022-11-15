@@ -6,20 +6,17 @@ parameters:
     default: linux-amd64
     description: >
       Executor name the app will be compiled on.
-      The default executors in this orb (linux-arm/amd64) use the rust version specified in rust_version.
       Make sure to set target_setup accordingly when using a custom executor.
     type: executor
   target_setup:
-    default: false
+    default: true
     description: >
       Whether to configure rustup and the required toolchain on the target executor.
-      Set to true if you are using a custom executor that does not have rust installed yet.
+      Set to false if you are using a custom executor that already has rust installed, like a docker image.
     type: boolean
-  target_setup_rust_version:
+  rust_version:
     default: "1.65"
-    description: >
-      Rust version to use. Only has an effect when target_setup is true.
-      The default executors already use this version
+    description: Rust version to use for building the app
     type: string
   release:
     default: true
@@ -57,14 +54,10 @@ steps:
             keys:
               - &cache-key cargo-<<parameters.cache_version>>-{{ arch }}-{{ checksum "Cargo.lock" }}-{{ checksum "rust-toolchain.toml" }}
   - when:
-      condition:
-        or:
-          # The linux-arm64 executor needs to always install rust tooling
-          - equal: [linux-arm64, <<parameters.target>>]
-          - <<parameters.target_setup>>
+      condition: <<parameters.target_setup>>
       steps:
         - rust/install:
-            version: <<parameters.target_setup_rust_version>>
+            version: <<parameters.rust_version>>
   - rust/clippy:
       with_cache: false
   - rust/test:
@@ -76,8 +69,7 @@ steps:
       condition: <<parameters.with_cache>>
       steps:
         - save_cache:
-            keys:
-              - *cache-key
+            key: *cache-key
             paths:
               - ~/.cargo
               - ./target

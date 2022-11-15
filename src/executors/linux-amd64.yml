@@ -1,4 +1,5 @@
 description: >
-  Standard Linux amd64 (x86_64) executor using a docker container and the orb rust_version
-docker:
-  - image: cimg/rust:1.65
+  Linux amd64 (x86_64) executor
+machine:
+  image: ubuntu-2204
+resource_class: large

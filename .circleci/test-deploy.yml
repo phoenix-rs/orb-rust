@@ -13,28 +13,37 @@ executors:
       - image: cimg/rust:1.65
   custom-docker-norust:
     docker:
-      - image: ubuntu:focal
+      - image: cimg/base:current-22.04
 
 workflows:
   test-deploy:
     jobs:
       # Make sure to include "filters: *filters" in every test job you want to run as part of your deployment.
       - rust/lint-test-build:
-          matrix:
-            parameters:
-              target:
-                - rust/linux-amd64
-                - rust/linux-arm64
-                - custom-docker
+          filters: *filters
+          name: test-builtin-default-executor
           store_artifact: true
-          artifact_destination: testapp-<<matrix.target>>
+          artifact_destination: testapp-builtin
       - rust/lint-test-build:
-          name: no-rust-executor-build-test
-          target: custom-docker-norust
-          target_setup: true
-          target_setup_rust_version: "1.65"
+          filters: *filters
+          name: test-builtin-other-executor
+          target: rust/linux-arm64
           store_artifact: true
-          artifact_destination: testapp-custom-docker-norust
+          artifact_destination: testapp-builtin-arm64
+      - rust/lint-test-build:
+          filters: *filters
+          name: test-exernal-executor
+          target: custom-docker
+          target_setup: false
+          store_artifact: true
+          artifact_destination: testapp-external
+      - rust/lint-test-build:
+          filters: *filters
+          name: test-exernal-executor-norust
+          target: custom-docker-norust
+          store_artifact: true
+          artifact_destination: testapp-external
+
       - orb-tools/pack:
           filters: *filters
 
@@ -44,8 +53,10 @@ workflows:
           pub-type: production
           requires:
             - orb-tools/pack
-            - no-rust-executor-build-test
-            - rust/lint-test-build
+            - test-builtin-default-executor
+            - test-builtin-other-executor
+            - test-exernal-executor
+            - test-exernal-executor-norust
           context: orb-publishing
           filters:
             branches:
