@@ -1,13 +1,17 @@
 description: >
-  Build images for multiple architectures and save them as artifacts
-# Provide a use-case based example for using this orb.
-# Everything in the `usage` section will be displayed in the orb registry.
-# Comments are not retained.
+  Build images for multiple architectures
+
 usage:
   version: 2.1
   orbs:
-    <orb-name>: <namespace>/<orb-name>@1.2.3
-  workflows:
-    use-my-orb:
-      jobs:
-        - <orb-name>/<job-name>
+    rust: phoenix-rs/rust@0.1.0
+    workflows:
+      ci:
+        jobs:
+          - rust/lint-test-build:
+              matrix:
+                parameters:
+                  target:
+                    - rust/linux-amd64
+                    - rust/linux-arm64
+              rust_version: "1.65"
