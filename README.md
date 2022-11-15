@@ -1,17 +1,8 @@
-# Orb Template
-
+# phoenix-rs rust orb
 
 [![CircleCI Build Status](https://circleci.com/gh/phoenix-rs/orb-rust.svg?style=shield "CircleCI Build Status")](https://circleci.com/gh/phoenix-rs/orb-rust) [![CircleCI Orb Version](https://badges.circleci.com/orbs/phoenix-rs/rust.svg)](https://circleci.com/orbs/registry/orb/phoenix-rs/rust) [![GitHub License](https://img.shields.io/badge/license-MIT-lightgrey.svg)](https://raw.githubusercontent.com/phoenix-rs/orb-rust/master/LICENSE) [![CircleCI Community](https://img.shields.io/badge/community-CircleCI%20Discuss-343434.svg)](https://discuss.circleci.com/c/ecosystem/orbs)
 
-
-
-A project template for Orbs.
-
-This repository is designed to be automatically ingested and modified by the CircleCI CLI's `orb init` command.
-
-_**Edit this area to include a custom title and description.**_
-
----
+This orb is used for CI testing in projects belonging to the [phoenix-rs](github.com/phoenix-rs) organization.
 
 ## Resources
 
@@ -21,7 +12,8 @@ _**Edit this area to include a custom title and description.**_
 
 ### How to Contribute
 
-We welcome [issues](https://github.com/phoenix-rs/orb-rust/issues) to and [pull requests](https://github.com/phoenix-rs/orb-rust/pulls) against this repository!
+This orb is mainly developed and adjusted for the needs in the aforementioned org.
+If you have suggestions or a PR, feel free to post them, but I cannot promise that I will merge them.
 
 ### How to Publish An Update
 1. Merge pull requests with desired changes to the main branch.
