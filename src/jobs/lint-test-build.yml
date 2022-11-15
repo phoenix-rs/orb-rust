@@ -1,0 +1,89 @@
+description: >
+  Lint, test and build the app for a given target architecture
+
+parameters:
+  target:
+    default: linux-amd64
+    description: >
+      Executor name the app will be compiled on.
+      The default executors in this orb (linux-arm/amd64) use the rust version specified in rust_version.
+      Make sure to set target_setup accordingly when using a custom executor.
+    type: executor
+  target_setup:
+    default: false
+    description: >
+      Whether to configure rustup and the required toolchain on the target executor.
+      Set to true if you are using a custom executor that does not have rust installed yet.
+    type: boolean
+  target_setup_rust_version:
+    default: "1.65"
+    description: >
+      Rust version to use. Only has an effect when target_setup is true.
+      The default executors already use this version
+    type: string
+  release:
+    default: true
+    description: Whether to build a release binary
+    type: boolean
+  store_artifact:
+    default: false
+    description: Whether to store the compiled binary as an artifact
+    type: boolean
+  artifact_path:
+    default: target/release/$CIRCLE_PROJECT_REPONAME
+    description: Path to the binary to save in the artifact. Can only be a single file right now
+    type: string
+  artifact_destination:
+    default: app
+    description: Artifact destination name
+    type: string
+  with_cache:
+    default: true
+    description: Enable cargo caching to speed up jobs
+    type: boolean
+  cache_version:
+    default: v1
+    description: Cache version. Increment to invalidate caches
+    type: string
+
+executor: <<parameters.target>>
+
+steps:
+  - checkout
+  - when:
+      condition: <<parameters.with_cache>>
+      steps:
+        - restore_cache:
+            keys:
+              - &cache-key cargo-<<parameters.cache_version>>-{{ arch }}-{{ checksum "Cargo.lock" }}-{{ checksum "rust-toolchain.toml" }}
+  - when:
+      condition:
+        or:
+          # The linux-arm64 executor needs to always install rust tooling
+          - equal: [linux-arm64, <<parameters.target>>]
+          - <<parameters.target_setup>>
+      steps:
+        - rust/install:
+            version: <<parameters.target_setup_rust_version>>
+  - rust/clippy:
+      with_cache: false
+  - rust/test:
+      with_cache: false
+  - rust/build:
+      with_cache: false
+      release: <<parameters.release>>
+  - when:
+      condition: <<parameters.with_cache>>
+      steps:
+        - save_cache:
+            keys:
+              - *cache-key
+            paths:
+              - ~/.cargo
+              - ./target
+  - when:
+      condition: <<parameters.store_artifact>>
+      steps:
+        - store_artifacts:
+            path: <<parameters.artifact_path>>
+            destination: <<parameters.artifact_destination>>

@@ -1,0 +1,5 @@
+description: >
+  Linux arm64 (aarch64) executor with the orb rust_version
+machine:
+  image: ubuntu-2204
+resource_class: arm.large

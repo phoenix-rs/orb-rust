@@ -7,24 +7,38 @@ filters: &filters
   tags:
     only: /.*/
 
-jobs:
-  # Create a job to test the commands of your orbs.
-  # You may want to add additional validation steps to ensure the commands are working as expected.
-  command-tests:
-    docker:
-      - image: cimg/base:current
-    steps:
-      - checkout
-      # Run your orb's commands to validate them.
-      - rust/greet
+executors:
+  custom-docker:
+    - image: cimg/rust:1.65
+  custom-docker-norust:
+    - image: ubuntu:focal
+
 workflows:
   test-deploy:
     jobs:
       # Make sure to include "filters: *filters" in every test job you want to run as part of your deployment.
+      - rust/lint-test-build:
+          name: default-build-test
+          matrix:
+            parameters:
+              target:
+                - linux-amd64
+                - linux-arm64
+                - custom-docker
+          store_artifact: true
+          artifact_destination: testapp-<<matrix.target>>
+      - rust/lint-test-build:
+          name: no-rust-executor-build-test
+          target: custom-docker-norust
+          target_setup: true
+          target_setup_rust_version: "1.65"
+          store_artifact: true
+          artifact_destination: testapp-custom-docker-norust
       - command-tests:
           filters: *filters
       - orb-tools/pack:
           filters: *filters
+
       - orb-tools/publish:
           orb-name: phoenix-rs/rust
           vcs-type: << pipeline.project.type >>
@@ -32,6 +46,8 @@ workflows:
           requires:
             - orb-tools/pack
             - command-tests
+            - no-rust-executor-build-test
+            - default-build-test
           context: orb-publishing
           filters:
             branches:

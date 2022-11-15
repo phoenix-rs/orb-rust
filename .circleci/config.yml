@@ -33,4 +33,3 @@ workflows:
           vcs-type: << pipeline.project.type >>
           requires: [orb-tools/publish]
           filters: *filters
-# VS Code Extension Version: 1.0.2
